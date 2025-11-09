@@ -325,51 +325,6 @@
 
             <!-- Counted -->
             <ion-segment-content v-if="selectedSegment === 'counted'" class="counted-segment">
-<<<<<<< Updated upstream
-              <ion-searchbar v-model="searchKeyword" placeholder="Search product..." @ionInput="handleIndexedDBSearch" class="ion-margin-bottom"/>
-              <template v-if="filteredItems.length">
-                <ion-card v-for="item in filteredItems" :key="item.uuid">
-                  <Image :src="item.product?.mainImageUrl" />
-                  <ion-item>
-                    <ion-label>
-                      {{ primaryId(item.product) }}
-                      <p>{{ secondaryId(item.product) }}</p>
-                      <p>{{ item.quantity }} {{ translate("units") }}</p>
-                    </ion-label>
-                  </ion-item>
-                </ion-card>
-              </template>
-
-              <template v-else-if="searchKeyword && !filteredItems.length">
-                <div class="empty-state ion-padding">
-                  <ion-label>{{ translate("No products found") }}</ion-label>
-                </div>
-              </template>
-
-              <template v-else>
-                  <div class="scroller-wrapper">
-                <DynamicScroller :items="countedItems" key-field="uuid" :min-item-size="80" :buffer="400" class="virtual-scroller">
-                <template v-slot="{ item, index, active }">
-                  <DynamicScrollerItem :item="item" :active="active" :index="index">
-                    <div class="card-wrapper">
-                  <ion-card class="counted-card">
-                  <Image :src="item.product?.mainImageUrl" />
-                  <ion-item>
-                    <ion-label>
-                      {{ primaryId(item.product) }}
-                      <p>{{ secondaryId(item.product) }}</p>
-                      <p>{{ item.quantity }} {{ translate("units") }}</p>
-                    </ion-label>
-                  </ion-item>
-                </ion-card>
-                </div>
-                </DynamicScrollerItem>
-                </template>
-                </DynamicScroller>
-                </div>
-              </template>
-            </ion-segment-content>
-=======
   <ion-searchbar
     v-model="searchKeyword"
     placeholder="Search product..."
@@ -408,7 +363,6 @@
     </DynamicScroller>
   </div>
 </ion-segment-content>
->>>>>>> Stashed changes
           </ion-segment-view>
         </div>
       </main>
@@ -1373,41 +1327,6 @@ ion-segment-view {
   z-index: 1;
 }
 
-<<<<<<< Updated upstream
-.counted-segment {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Make sure virtual scroller is scrollable independently */
-.scroller-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  height: 100%;
-  position: relative;
-}
-
-.virtual-scroller {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 8px;
-}
-
-/* Each card should behave like a fixed-width box in the row */
-.card-wrapper {
-  flex: 0 0 300px;   /* width per card */
-  max-width: 300px;
-}
-
-/* Optional: make the cards consistent height */
-.counted-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-=======
 .virtual-scroller {
   display: block;
   position: relative;
@@ -1435,6 +1354,5 @@ ion-segment-view {
   width: 100%;
   height: auto;
   object-fit: contain;
->>>>>>> Stashed changes
 }
 </style>
