@@ -325,6 +325,7 @@
 
             <!-- Counted -->
             <ion-segment-content v-if="selectedSegment === 'counted'" class="counted-segment">
+<<<<<<< Updated upstream
               <ion-searchbar v-model="searchKeyword" placeholder="Search product..." @ionInput="handleIndexedDBSearch" class="ion-margin-bottom"/>
               <template v-if="filteredItems.length">
                 <ion-card v-for="item in filteredItems" :key="item.uuid">
@@ -368,6 +369,46 @@
                 </div>
               </template>
             </ion-segment-content>
+=======
+  <ion-searchbar
+    v-model="searchKeyword"
+    placeholder="Search product..."
+    @ionInput="handleIndexedDBSearch"
+    class="ion-margin-bottom"
+  />
+
+  <div class="scroller-wrapper" ref="countedWrapper">
+    <DynamicScroller
+      :items="countedRows"
+      key-field="key"
+      :min-item-size="rowHeight"
+      class="virtual-scroller"
+      :buffer="2"
+    >
+      <template #default="{ item: row, active, index }">
+        <DynamicScrollerItem :item="row" :active="active" :index="index">
+          <div class="row">
+            <ion-card
+              v-for="prod in row.items"
+              :key="prod.uuid"
+              class="counted-card"
+            >
+              <Image :src="prod.product?.mainImageUrl" />
+              <ion-item>
+                <ion-label>
+                  {{ primaryId(prod.product) }}
+                  <p>{{ secondaryId(prod.product) }}</p>
+                  <p>{{ prod.quantity }} {{ translate('units') }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-card>
+          </div>
+        </DynamicScrollerItem>
+      </template>
+    </DynamicScroller>
+  </div>
+</ion-segment-content>
+>>>>>>> Stashed changes
           </ion-segment-view>
         </div>
       </main>
@@ -462,7 +503,7 @@
 <script setup lang="ts">
 import { IonBackButton, IonButtons, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonPage, IonSearchbar, IonSpinner, IonSegment, IonSegmentButton, IonSegmentContent, IonSegmentView, IonThumbnail, IonTitle, IonToolbar, IonFab, IonFabButton, IonModal, IonRadio, IonRadioGroup, onIonViewDidEnter } from '@ionic/vue';
 import { addOutline, chevronUpCircleOutline, chevronDownCircleOutline, timerOutline, searchOutline, barcodeOutline, checkmarkDoneOutline, exitOutline, pencilOutline, saveOutline, closeOutline } from 'ionicons/icons';
-import { ref, computed, defineProps, watch, watchEffect, toRaw, onBeforeUnmount } from 'vue';
+import { ref, computed, defineProps, watch, watchEffect, toRaw, onMounted, onBeforeUnmount } from 'vue';
 import { useProductMaster } from '@/composables/useProductMaster';
 import { useInventoryCountImport } from '@/composables/useInventoryCountImport';
 import { showToast, hasError } from '@/utils';
@@ -539,6 +580,42 @@ const countTypeLabel = computed(() =>
 );
 const isDirected = computed(() => props.inventoryCountTypeId === 'DIRECTED_COUNT');
 const userLogin = computed(() => store.getters['user/getUserProfile']);
+
+const countedWrapper = ref<HTMLElement | null>(null);
+const rowHeight = 304; // approximate height of one card row
+const CARD_WIDTH = 300; // width per card including margin
+const GAP = 12; // space between cards
+
+const cols = ref(1);
+
+function calculateCols() {
+  const width = countedWrapper.value?.clientWidth || window.innerWidth * 0.7;
+  cols.value = Math.max(1, Math.floor(width / (CARD_WIDTH + GAP)));
+}
+
+let resizeObserver: ResizeObserver | null = null;
+onMounted(() => {
+  calculateCols();
+  resizeObserver = new ResizeObserver(() => calculateCols());
+  if (countedWrapper.value) resizeObserver.observe(countedWrapper.value);
+});
+onBeforeUnmount(() => resizeObserver?.disconnect());
+
+// Compute rows by grouping N items per row
+const countedRows = computed(() => {
+  const src = filteredItems.value.length
+    ? filteredItems.value
+    : countedItems.value;
+
+  const rows: { key: string; items: any[] }[] = [];
+  for (let i = 0; i < src.length; i += cols.value) {
+    rows.push({
+      key: `row-${i}`,
+      items: src.slice(i, i + cols.value),
+    });
+  }
+  return rows;
+});
 
 onIonViewDidEnter(async () => {
   await loader.present("Loading session details...");
@@ -770,6 +847,11 @@ async function handleSessionLock() {
           if (type === 'heartbeatSuccess') {
             currentLock.value.thruDate = thruDate;
             console.log('Lock heartbeat successful. Lock extended to', new Date(thruDate).toLocaleString());
+          } else if (type === 'lockForceReleased') {
+            showToast('Session lock was force-released by another user.');
+            await releaseSessionLock();
+            if (lockWorker) await lockWorker.stopHeartbeat();
+            router.push('/tabs/count');
           } else if (type === 'lockExpired') {
             showToast('Session lock expired. Please reacquire the lock.');
             await releaseSessionLock();
@@ -1291,6 +1373,7 @@ ion-segment-view {
   z-index: 1;
 }
 
+<<<<<<< Updated upstream
 .counted-segment {
   display: flex;
   flex-direction: column;
@@ -1324,5 +1407,34 @@ ion-segment-view {
   height: 100%;
   display: flex;
   flex-direction: column;
+=======
+.virtual-scroller {
+  display: block;
+  position: relative;
+  contain: layout paint;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  padding: 8px;
+}
+
+/* Cards have natural height — no fixed constraint */
+.counted-card {
+  flex: 0 1 304px;
+  display: flex;
+  flex-direction: column;
+  height: auto; /* let content define height */
+}
+
+/* optional: ensure images don't overflow */
+.counted-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+>>>>>>> Stashed changes
 }
 </style>
