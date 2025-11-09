@@ -324,7 +324,7 @@
             </ion-segment-content>
 
             <!-- Counted -->
-            <ion-segment-content v-if="selectedSegment === 'counted'" class="cards">
+            <ion-segment-content v-if="selectedSegment === 'counted'" class="counted-segment">
               <ion-searchbar v-model="searchKeyword" placeholder="Search product..." @ionInput="handleIndexedDBSearch" class="ion-margin-bottom"/>
               <template v-if="filteredItems.length">
                 <ion-card v-for="item in filteredItems" :key="item.uuid">
@@ -346,7 +346,12 @@
               </template>
 
               <template v-else>
-                <ion-card v-for="item in countedItems" :key="item.uuid">
+                  <div class="scroller-wrapper">
+                <DynamicScroller :items="countedItems" key-field="uuid" :min-item-size="80" :buffer="400" class="virtual-scroller">
+                <template v-slot="{ item, index, active }">
+                  <DynamicScrollerItem :item="item" :active="active" :index="index">
+                    <div class="card-wrapper">
+                  <ion-card class="counted-card">
                   <Image :src="item.product?.mainImageUrl" />
                   <ion-item>
                     <ion-label>
@@ -356,6 +361,11 @@
                     </ion-label>
                   </ion-item>
                 </ion-card>
+                </div>
+                </DynamicScrollerItem>
+                </template>
+                </DynamicScroller>
+                </div>
               </template>
             </ion-segment-content>
           </ion-segment-view>
@@ -470,6 +480,7 @@ import { loader } from '@/user-utils';
 import { wrap } from 'comlink'
 import type { Remote } from 'comlink'
 import type { LockHeartbeatWorker } from '@/workers/lockHeartbeatWorker';
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 
 const props = defineProps<{
   workEffortId: string;
@@ -1278,5 +1289,40 @@ ion-segment-view {
   top: 6px;
   right: 10px;
   z-index: 1;
+}
+
+.counted-segment {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Make sure virtual scroller is scrollable independently */
+.scroller-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+}
+
+.virtual-scroller {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px;
+}
+
+/* Each card should behave like a fixed-width box in the row */
+.card-wrapper {
+  flex: 0 0 300px;   /* width per card */
+  max-width: 300px;
+}
+
+/* Optional: make the cards consistent height */
+.counted-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>
