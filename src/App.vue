@@ -30,11 +30,13 @@
       </ion-menu>
 
       <ion-router-outlet id="main-content"></ion-router-outlet>
+      <AskAiWidget />
     </IonSplitPane>
   </ion-app>
 
   <ion-app v-else>
     <ion-router-outlet id="main-content"></ion-router-outlet>
+    <AskAiWidget />
   </ion-app>
 </template>
 
@@ -55,6 +57,7 @@ import {
   IonMenuToggle,
   loadingController
 } from '@ionic/vue';
+import AskAiWidget from '@/components/AskAiWidget.vue';
 import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import emitter from "@/event-bus";

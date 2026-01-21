@@ -45,7 +45,10 @@
     "vue-router": "^4.0.12",
     "vue-virtual-scroll-list": "^2.3.5",
     "vue-virtual-scroller": "^2.0.0-beta.8",
-    "vue3-virtual-scroll-list": "^0.2.1"
+    "vue3-virtual-scroll-list": "^0.2.1",
+    "ai": "^6.0.42",
+    "zod": "^3.23.8",
+    "@ai-sdk/amazon-bedrock": "^4.0.22"
   },
   "devDependencies": {
     "@capacitor/cli": "^2.4.7",

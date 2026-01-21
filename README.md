@@ -27,6 +27,22 @@ For a high level overview of the project layout take a look at [docs/README.md](
 5. Create a `.env` file by taking reference from the `.env.example`.
 6. To run the app in browser use the command: `ionic serve`
 
+
+## AI Assistant (Vercel AI SDK)
+
+The app includes a floating Ask AI button on every page and a serverless AI endpoint at `api/ai/chat.js`.
+
+Setup:
+1. Install dependencies: `npm i`
+2. Add `VUE_APP_AI_API_BASE` to `.env` if the API is hosted on a different domain.
+3. Set server environment variables for the AI endpoint:
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `AWS_REGION`
+   - `BEDROCK_MODEL_ID` (optional, defaults to `anthropic.claude-3-haiku-20240307-v1:0`)
+   - `AI_CORS_ORIGIN` (optional, required if the UI calls the API from a different origin)
+4. Update the knowledge base in `api/ai/knowledge.js` with your cycle count processes and error guidance.
+
 ## Firebase Hosting
 
 Here are the steps to deploy app on firebase hosting
